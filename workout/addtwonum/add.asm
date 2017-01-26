@@ -3,14 +3,14 @@ BITS 64
 extern printf
 extern scanf
 
-section .rodata
+section .rodata 
 	inp: db "%d"
 	out: db "Sum is %d", 10, 0
 	prompt: db "Enter the number", 0
 
 section .bss
-	num1: resq 1
-	num2: resq 1
+	num1: resq 1 
+	num2: resq 1 
 
 section .text
 	global main
