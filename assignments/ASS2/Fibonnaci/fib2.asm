@@ -1,52 +1,42 @@
 BITS 64
-        extern printf
-        extern scanf
 
-        section .bss 
-                num1: resq 1 ;the argument
+extern fib2
 
-        section .rodata
-                prompt: db "Enter the number", 0
-                inp: db"%d", 10, 0
-                out: db "% 20ld", 10, 0
+section .rodata
+    out: db "%d", 10, 0
 
+section .text
+    global main
 
-        section .text
-                global main
-main:
-        Push rbx; 
+        main:
+                push rbp
+                mov rbp, rsp
 
-        mov rdi, prompt
-        call printf
+                mov rdi, [rsi + 8]
+                mov r8, rdi
 
-        mov rsi, num1
-        mov rdi, inp
-        call scanf
+                mov rcx, r8
+                xor rax, rax
+                xor rbx, rbx
+                inc rbx
+        print:
 
-        Mov ecx, QWORD[rsi]
-        Xor rax, rax 
-        Xor rbx, rbx  
-        Inc rbx
-print:
+                push rax
+                push rcx
 
-        Push rax
-        Push rcx
+                mov rdi, out
+                mov rsi, rax
+                xor rax, rax
+                call fib2
 
-        Mov rdi, out
-        Mov rsi, rax
-        Xor rax, rax 
-        Call printf
+                pop rcx
+                pop rax 
 
-        Pop rcx
-        Pop rax 
+                mov rdx, rax
+                mov rax, rbx
+                add rbx, rdx
+                dec rcx
+                jnz print
 
-        Mov rdx, rax
-        Mov rax, rbx
-        Add rbx, rdx
-        Dec ecx
-        Jnz print
-
-        Pop rbx
-        Ret
-
-       
+                pop rbx
+                ret
