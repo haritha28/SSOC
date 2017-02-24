@@ -1,6 +1,6 @@
 BITS 64
 
-%define BUF_SIZE 27
+%define BUF_SIZE 5
 %define ELEM_SIZE 1
 %define O_RDONLY 0
 
@@ -49,44 +49,62 @@ section .text
         jl .openfailed
         mov [fh], rax
 
+        ;mov rdi,buffer
+        ;call .strlen
+        ;mov r14, rax
+
         mov rax, SYS_READ               ; read BUF_SIZE bytes from file into buffer
         mov rdi, [fh]
         mov rsi, buffer
         mov rdx, BUF_SIZE
-        syscalls
+        syscall
 
         mov rdi, buffer					;move the buffer to rdi
         call .strlen
         mov r10, rax					
 
         mov rdi, r13
-        call strlen
+        call .strlen
         mov r11, rax
+        mov r12,r11
         										 					
         mov rcx, r10
-        mov rdx, buffer
+        ;mov rdx, buffer
         xor rax, rax
+        ;mov rbx, r13
 
+        mov r15,0
 
-    	;.keylooop:
+        .keyloop:
 
-	        mov bl, BYTE[r13]
+	    	mov bl, BYTE[r13+r15]
 
-		        .encryptloop:
-		        	xor BYTE[rdx+rax],bl
-		        	inc rax
-		        	dec rcx
-		        	jne .encryptloop
+		        xor BYTE[buffer+rax],bl
+		        inc rax
+		        dec rcx
+		        cmp rcx,0
+		        je	.label1
+		        	
+		    inc r15
+		    dec r11
+		    cmp r11,0
+		    jne .keyloop
+		    je  .setloop
 
-		    
-		    ;jn
+		.setloop:
+			mov r11,r12
+			xor r15, r15
+		    cmp rcx, 0
+		    je .label1
+		    jne .keyloop
 
+		.label1:   
+	        mov rax, SYS_WRITE              ; write buffer to stdout
+	        mov rdi, STDOUT
+	        mov rsi, buffer
+	        mov rdx, BUF_SIZE
+	        syscall
 
-        mov rax, SYS_WRITE              ; write buffer to stdout
-        mov rdi, STDOUT
-        mov rsi, buffer
-        mov rdx, BUF_SIZE
-        syscall
 
         mov rax, SYS_CLOSE              ; close file
         mov rdi, [fh]
