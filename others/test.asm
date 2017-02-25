@@ -1,6 +1,8 @@
+
+
 BITS 64
 
-%define BUF_SIZE 200
+%define BUF_SIZE 20
 %define ELEM_SIZE 1
 %define O_RDONLY 0
 
@@ -32,15 +34,12 @@ section .text
 
     _start:
         mov rax, QWORD [rsp]            ; argument count check
-        cmp rax, 0x3
+        cmp rax, 3
         jne .nofilename
 
         mov rax, QWORD [rsp + 16]       ; retrieve address of filename from stack
         mov [filename], rax
 
-        mov r13, QWORD[rsp +24]         ;store the key in r13
-
-        xor rax, rax                    ;naddded
         mov rax, SYS_OPEN               ; open file in read only mode
         mov rdi, [filename]
         xor rsi, rsi
@@ -50,71 +49,63 @@ section .text
         jl .openfailed
         mov [fh], rax
 
-        ;mov rdi,buffer
-        ;call .strlen
-        ;mov r14, rax
-
-        xor rax, rax                    ;nadded
         mov rax, SYS_READ               ; read BUF_SIZE bytes from file into buffer
         mov rdi, [fh]
         mov rsi, buffer
         mov rdx, BUF_SIZE
         syscall
 
-        mov rdi, buffer                 ;move the buffer to rdi
-        call .strlen
-        mov r10, rax   
-        mov r9, r10                 
-
+        mov r13, buffer
         mov rdi, r13
-        call .strlen
-        mov r11, rax
-        mov r12,r11
-                                                                    
-        mov rcx, r10
-        ;mov rdx, buffer
-        xor rax, rax
-        ;mov rbx, r13
+        call strlen
+        mov r12,rax
+        
+        mov r15,[rsp+24]
+        mov rdi, r15
+        call strlen
+        mov r14, rax
+        mov r10,r14
+        mov rdx, 0
 
-        mov r15,0
+.repeat:
+        mov rax,r10
+        jmp .loop
 
-        .keyloop:
+.loop:
+  
+        mov al, BYTE[r15+rax]
+        xor BYTE [r13+rdx],al
+        inc rax
+        inc rdx
+        dec r13
+        dec r15
+        cmp r12, 0
+        je .print
+        cmp r14,0
+        je .repeat
+        jne .loop
+  
+.print:
+        mov rax, SYS_WRITE
+        mov rdi, STDOUT
+        mov rsi, r15
+        mov rdx, r12
+        syscall
 
-            mov bl, BYTE[r13+r15]
 
-                xor BYTE[buffer+rax],bl
-                inc rax
-                dec rcx
-                cmp rcx,0
-                je  .label1
-                    
-            inc r15
-            dec r11
-            cmp r11,0
-            jne .keyloop
-            je  .setloop
-
-        .setloop:
-            mov r11,r12
-            xor r15, r15
-            cmp rcx, 0
-            je .label1
-            jne .keyloop
-
-        .label1:   
-            xor rax, rax
-            mov rax, SYS_WRITE              ; write buffer to stdout
-            mov rdi, STDOUT
-            mov rsi, buffer
-            mov rdx, r9
-            syscall
 
         mov rax, SYS_CLOSE              ; close file
         mov rdi, [fh]
         syscall
 
+
+
         xor rdi, rdi                    ; exit(0)
         jmp .final
+
+         .final:                         ; exit syscall
+            mov rax, SYS_EXIT
+            syscall
 
         .openfailed:                    ; display file open failed error message
             mov rax, SYS_WRITE
@@ -134,18 +125,7 @@ section .text
             mov rdi, 1                  ; exit(1)
             jmp .final
 
-        .final:                        ; exit syscall
-            
-            xor r15, r15
-            xor r10, r10
-            xor r9, r9
-            xor r11,r11
-            xor rax, rax
-            
-            mov rax, SYS_EXIT
-            syscall
-
-        .strlen:
+        strlen:
             push rbp
             mov rbp, rsp
 

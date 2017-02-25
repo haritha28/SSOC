@@ -22,24 +22,20 @@ section .text
         push rbp
         mov rbp, rsp
 
-        cmp rdi, 2
-        je .label1
-        jne .label3
-
         mov r10, rdi
         mov r11, rsi
 
         cmp r10, 2
         jne .label1
 
-        mov rax, [r11 + 8]    ;arg[1]  
-        mov QWORD [var6], rax            
+        mov rax, [r11 + 8]
+        mov QWORD [var6], rax
 
         mov rsi, var2
         mov rdi, QWORD [var6]
         call fopen
-        test rax, rax        ;n
-        jz .label2           ; jump if zero
+        test rax, rax
+        jz .label2
 
         mov [var7], rax
 
@@ -53,7 +49,7 @@ section .text
         mov rsi, 1
         mov rdi, var5
         call fread
-        mov BYTE [var5 + 20], 0 ;setting last byte to zero
+        mov BYTE [var5 + 20], 0
 
         mov rsi, var5
         mov rdi, var3
@@ -79,6 +75,5 @@ section .text
             jmp .label3
 
         .label3:
-            xor rax, rax
             leave
             ret
