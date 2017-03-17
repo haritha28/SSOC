@@ -28,12 +28,8 @@ def check_key(list):
     flag = 1
     hashval =  hashlib.md5(user_name).hexdigest()
     value = pair_reverse(hashval)
-    lower_hex = hex(value >> 64)
-    print lower_hex
-    higher_hex = hex(value & 0xffffffffffffffff)
-    print higher_hex
-    #result_128 = ( (value >> 64 ) ^ value) & 0xffffffffffffffff
-    #print xorval
+    result_128 = ((int(value,16) >> 64 ) ^ int(value,16)) & 0xffffffffffffffff
+    xorval = hex(result_128)
 
 if count_check < 1:
     print "USAGE: USERNAME KEY"
