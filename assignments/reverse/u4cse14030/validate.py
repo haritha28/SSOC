@@ -5,18 +5,25 @@ import struct
 import numpy
 
 array = [ 0x5daac65f720be8c9, 0x8c92b50d1c2d1e4f, 0xa6fd433408510ea4, 0x0e9296eddd450b03, 0x84db12124b70fbd9, 0x091d7b508606ffac, 0xfd41e1b9fd423b8f, 0x56bd6aca483c8c74, 0x037c7f5864b34642, 0xb488202e8ea9111b, 0x88af43a6fe478cda, 0xaa4fc294b8b380b6, 0x5b1c0d7ed87b9535, 0x4a9b68be4888bc63, 0x0b1a4657555b0964, 0xf0e4afaab7a436c1, 0x3b031b0100000408]
+array2 = []
 input = raw_input()
 list =  input.split( " ")
 count_check = len(input)
 
+def hex_add(mul_value):
+    const2 = 0xa508de475239764c
+    add_value = long((mul_value),16) + const2
+    print hex(add_value)
+    #array2.append(hex(add_value))
+
 def loop2(rax):
     const1 = 0xda57e1b4b758031a
-    const2 = 0xa508de475239764c
-    mul = int(const1) * int(rax)
-    mul_value = hex(mul & 0xffffffffffffffff)
-    #add = int(mul_value) + int(const2)
-
-
+    counter2 = 0
+    while counter2 != 7:
+        mul = int(const1) * int(rax)
+        mul_value = hex(mul & 0xffffffffffffffff)
+        add_value = hex_add(mul_value)
+        counter2 = counter2 + 1
 
 def loop1(xorval):
     rax = 0x0
