@@ -34,12 +34,16 @@ def keygen(array2):
     printkeygen(array3)
 
 def printkeygen(array3):
+    print "keygenFunction"
     for i in range(len(array3)):
-        array3[i]=array3[i]
-        print array3[i]
-    # keygenerated = ''.join(map(str, array3))
-    # print keygenerated
+        array3[i] = array3[i].lstrip('0x')
+        array3[i] = array3[i].rjust(16,'0')
+    
 
+# def printarray(array2):
+#     print "array2"
+#     for i in range(len(array2)):
+#         print array2[i]
 
 def strip(array2):
     n = len(array2)
@@ -47,7 +51,7 @@ def strip(array2):
     while i != n:
         array2[i] = array2[i].rstrip('L')
         i = i + 1
-    #print array2
+    #printarray(array2)
     keygen(array2)
 
 
