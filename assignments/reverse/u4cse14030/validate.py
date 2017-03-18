@@ -20,6 +20,7 @@ def keygen(array2):
     value2 = int(array2[8],16)
     # while i != 8:
     value3 = value1 ^ value2
+    array3.append(hex(value3).rstrip('L'))
     # print hex(value3).rstrip('L')
     # print hex(value1).rstrip('L')
     # print hex(value2).rstrip('L')
@@ -30,11 +31,14 @@ def keygen(array2):
         value3 = value1 ^ value2
         array3.append(hex(value3).rstrip('L'))
         i = i + 1
-    printarray(array3)
+    printkeygen(array3)
 
-def printarray(array3):
+def printkeygen(array3):
     for i in range(len(array3)):
-        print array3[i].lstrip('0x')
+        array3[i]=array3[i]
+        print array3[i]
+    # keygenerated = ''.join(map(str, array3))
+    # print keygenerated
 
 
 def strip(array2):
@@ -43,6 +47,7 @@ def strip(array2):
     while i != n:
         array2[i] = array2[i].rstrip('L')
         i = i + 1
+    #print array2
     keygen(array2)
 
 
