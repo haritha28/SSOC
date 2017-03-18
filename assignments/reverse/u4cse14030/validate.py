@@ -10,10 +10,16 @@ input = raw_input()
 list =  input.split( " ")
 count_check = len(input)
 
+def printarray(array2):
+    #i = 0
+    for i in range(len(array2)):
+        print array2[i]
+
+
 def hex_add(mul_value):
     const2 = 0xa508de475239764c
     add_value = long((mul_value),16) + const2
-    print hex(add_value)
+    return  hex(add_value)
     #array2.append(hex(add_value))
 
 def loop2(rax):
@@ -23,7 +29,12 @@ def loop2(rax):
         mul = int(const1) * int(rax)
         mul_value = hex(mul & 0xffffffffffffffff)
         add_value = hex_add(mul_value)
+        rax = add_value
+        rax = long(rax,16)
+        array2.append(hex(rax & 0xffffffffffffffff ))
         counter2 = counter2 + 1
+    printarray(array2)
+
 
 def loop1(xorval):
     rax = 0x0
