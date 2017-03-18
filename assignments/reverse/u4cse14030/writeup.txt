@@ -1,0 +1,51 @@
+Step1:    I used "readelf -h validate.out" to get the entry point, which is 0x4006d0
+          Then set disassembly-flavor intel and type: x/20i 0x4006d0
+          Got the first 20 instruction from where we got the start function at 0x4006ed
+
+Step2:	  Set a break point to the address 0x4006ed we can see that we are passing one function
+      	  as an agrument to the main function. Which is 0x4007bd.
+      	  Here we check if the number of argument is three or not, if it is three we jmp to
+      	  0x4007fc and if it is not  three we have a usage error.
+
+Step3:    In 0x4007fc, we find the strlength of the username given pass four  arguments to the
+      	  function jmp_MD5 out of which one is the strinlength given to rsi, rdx -> not sure
+      	  rdi -> username.
+
+Step4:   MD5 is basically a cryptographic hash function which uses one-way encryption, hence on
+      	 passing the string through MD5 we would get hash value of 128 bits. This 128 bits that has
+         32 characters stores the first 16 into r8 register and then xor it with the next 16 bits, which
+         comes as the return value for the function MD5. Here the 32 characters are revered by pairs
+         then xor-ed.
+
+Step5:   Then we encounter the following loop:
+         for (rdx = r8, rcx=rax=0 ; ecx != 64 ; ecx+=0x10){
+              shr rdx,cl
+              and edx,0xf
+              xor rax,qword ptr [rdx*8+0x400a60] //to get these we have an array of elements in 0x400a60
+         }
+         This loop runs for 4 times which computes 4 different values of rdx, which is later then
+         taken to find out a qword from the list of 16 qwords starting from address 0x400a60.
+
+Step6:   Then we encounter the following if condition where two constant values are consecutively multipled and
+         added and pushed to the stack. Thus we get the first 8 values into the stack
+         if (rax != rdi ) {
+              rdx = const1
+              imul rax, rdx
+              rdx = const2
+              add rdx, rax
+              push to stack
+              set rdi to [rsp+0x38]
+         }
+
+Step7:  If the above condition was true.
+        if (rax == rdi ) {
+            Move the xor-ed value in the Step4 to the end of stack ie to the point after it was pushed just before
+            xor the first value with the last one and push it to stack
+            while (counter != 8)
+              xor the second value with the above computed xor value
+              repeat the above step till end.
+        }
+        This generates a 144 bit key.
+
+Step8: It compares the password which I have given that the key that it has generated to see if it is
+       invalid or valid password.
